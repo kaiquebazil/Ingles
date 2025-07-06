@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
+    <title>Método Natural de Inglês</title>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #ef233c;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .language-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .progress-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .activities {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .activity-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .activity-card h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .completed .checkmark {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .completed .checkmark::after {
+            content: "✓";
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #d90429;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .day {
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            min-height: 80px;
+        }
+
+        .day.completed {
+            background-color: #e6f7ff;
+            border: 2px solid var(--success);
+        }
+
+        .streak {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .streak-count {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .month-goal {
+            background-color: #e6f7ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .month-goal h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .activities {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="language-toggle" id="language-toggle">EN/PT</button>
+            <h1 id="app-title">Método Natural de Inglês</h1>
+            <p id="app-subtitle">Aprenda inglês como uma criança - naturalmente!</p>
+        </header>
+
+        <div class="streak">
+            <span id="streak-text">Sequência atual:</span> <span class="streak-count" id="streak-count">0</span> <span id="days-text">dias</span>
+        </div>
+
+        <!-- Monthly Goal Display -->
+        <div class="month-goal" id="month-goal">
+            <h3 id="goal-title">Meta do 1º Mês</h3>
+            <p id="goal-description">Compreender e repetir frases simples (família, dias, números, casa).</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-card">
+                <h3 id="overall-title">Progresso Total</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="overall-progress"></div>
+                </div>
+                <p id="overall-percent">0% completado</p>
+            </div>
+
+            <div class="progress-card">
+                <h3 id="monthly-title">Progresso Mensal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="monthly-progress"></div>
+                </div>
+                <p id="monthly-percent">0% completado</p>
+            </div>
+
+            <div class="progress-card">
+                <h3 id="weekly-title">Progresso Semanal</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="weekly-progress"></div>
+                </div>
+                <p id="weekly-percent">0% completado</p>
+            </div>
+        </div>
+
+        <h2 id="today-title">Atividades de Hoje</h2>
+        <div class="activities" id="activities">
+            <!-- Atividades serão adicionadas por JavaScript -->
+        </div>
+
+        <h2 id="week-title">Esta Semana</h2>
+        <div class="calendar" id="calendar">
+            <!-- Calendário será adicionado por JavaScript -->
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn-danger" id="reset-btn">Zerar Todo Progresso</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do App
+        const STORAGE_KEY = 'naturalEnglishProgress';
+        const LANGUAGE_KEY = 'naturalEnglishLanguage';
+        
+        // Metas mensais em ambos os idiomas
+        const MONTHLY_GOALS = {
+            pt: [
+                "Compreender e repetir frases simples (família, dias, números, casa).",
+                "Falar sobre você e sua rotina.",
+                "Compreender histórias curtas com mais fluência.",
+                "Ter mini conversas com nativos.",
+                "Expressar opinião, contar histórias simples.",
+                "Conversar com liberdade sobre vários temas do cotidiano."
+            ],
+            en: [
+                "Understand and repeat simple phrases (family, days, numbers, home).",
+                "Talk about yourself and your routine.",
+                "Understand short stories more fluently.",
+                "Have mini conversations with natives.",
+                "Express opinions, tell simple stories.",
+                "Talk freely about various everyday topics."
+            ]
+        };
+        
+        // Atividades do método natural em ambos os idiomas
+        const NATURAL_ACTIVITIES = {
+            pt: [
+                { id: 'comprehension', name: 'Compreensão auditiva (vídeos simples)', points: 20 },
+                { id: 'shadowing', name: 'Shadowing (repetição em voz alta)', points: 20 },
+                { id: 'immersion', name: 'Imersão passiva (ouvir conteúdo)', points: 15 },
+                { id: 'picture-description', name: 'Descrever imagens em voz alta', points: 15 },
+                { id: 'simple-dialogue', name: 'Praticar diálogos simples', points: 20 },
+                { id: 'intuitive-grammar', name: 'Estudo intuitivo de padrões', points: 10 }
+            ],
+            en: [
+                { id: 'comprehension', name: 'Listening comprehension (simple videos)', points: 20 },
+                { id: 'shadowing', name: 'Shadowing (voice repetition)', points: 20 },
+                { id: 'immersion', name: 'Passive immersion (listen to content)', points: 15 },
+                { id: 'picture-description', name: 'Describe pictures out loud', points: 15 },
+                { id: 'simple-dialogue', name: 'Practice simple dialogues', points: 20 },
+                { id: 'intuitive-grammar', name: 'Intuitive pattern study', points: 10 }
+            ]
+        };
+        
+        const TOTAL_DAYS = 180;
+        const MONTH_DAYS = 30;
+        const WEEK_DAYS = 7;
+
+        // Textos da UI em ambos os idiomas
+        const UI_TEXTS = {
+            pt: {
+                appTitle: "Método Natural de Inglês",
+                appSubtitle: "Aprenda inglês como uma criança - naturalmente!",
+                streakText: "Sequência atual:",
+                daysText: "dias",
+                overallTitle: "Progresso Total",
+                monthlyTitle: "Progresso Mensal",
+                weeklyTitle: "Progresso Semanal",
+                todayTitle: "Atividades de Hoje",
+                weekTitle: "Esta Semana",
+                resetBtn: "Zerar Todo Progresso",
+                completed: "completado",
+                goalTitle: "Meta do {month}º Mês",
+                monthNames: ["1º", "2º", "3º", "4º", "5º", "6º"]
+            },
+            en: {
+                appTitle: "Natural English Method",
+                appSubtitle: "Learn English like a child - naturally!",
+                streakText: "Current streak:",
+                daysText: "days",
+                overallTitle: "Overall Progress",
+                monthlyTitle: "Monthly Progress",
+                weeklyTitle: "Weekly Progress",
+                todayTitle: "Today's Activities",
+                weekTitle: "This Week",
+                resetBtn: "Reset All Progress",
+                completed: "completed",
+                goalTitle: "Month {month} Goal",
+                monthNames: ["1st", "2nd", "3rd", "4th", "5th", "6th"]
+            }
+        };
+
+        // Elementos DOM
+        const activitiesContainer = document.getElementById('activities');
+        const calendarContainer = document.getElementById('calendar');
+        const overallProgress = document.getElementById('overall-progress');
+        const overallPercent = document.getElementById('overall-percent');
+        const monthlyProgress = document.getElementById('monthly-progress');
+        const monthlyPercent = document.getElementById('monthly-percent');
+        const weeklyProgress = document.getElementById('weekly-progress');
+        const weeklyPercent = document.getElementById('weekly-percent');
+        const streakCount = document.getElementById('streak-count');
+        const resetBtn = document.getElementById('reset-btn');
+        const monthGoalElement = document.getElementById('month-goal');
+        const languageToggle = document.getElementById('language-toggle');
+        const appTitle = document.getElementById('app-title');
+        const appSubtitle = document.getElementById('app-subtitle');
+        const streakText = document.getElementById('streak-text');
+        const daysText = document.getElementById('days-text');
+        const overallTitle = document.getElementById('overall-title');
+        const monthlyTitle = document.getElementById('monthly-title');
+        const weeklyTitle = document.getElementById('weekly-title');
+        const todayTitle = document.getElementById('today-title');
+        const weekTitle = document.getElementById('week-title');
+        const goalTitle = document.getElementById('goal-title');
+        const goalDescription = document.getElementById('goal-description');
+
+        // Estado do App
+        let state = {
+            startDate: null,
+            lastCompletedDate: null,
+            streak: 0,
+            completedDays: 0,
+            dailyProgress: {},
+            currentMonth: 0
+        };
+
+        let currentLanguage = 'pt';
+
+        // Inicializar o app
+        function init() {
+            loadLanguage();
+            loadData();
+            updateMonthGoal();
+            setupActivities();
+            setupCalendar();
+            updateProgressBars();
+            updateStreak();
+            updateUITexts();
+            
+            checkTodaysCompletion();
+        }
+
+        // Carregar idioma salvo
+        function loadLanguage() {
+            const savedLanguage = localStorage.getItem(LANGUAGE_KEY);
+            currentLanguage = savedLanguage || 'pt';
+        }
+
+        // Alternar idioma
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'pt' ? 'en' : 'pt';
+            localStorage.setItem(LANGUAGE_KEY, currentLanguage);
+            updateUITexts();
+            updateMonthGoal();
+            setupActivities();
+        }
+
+        // Atualizar todos os textos da UI
+        function updateUITexts() {
+            const texts = UI_TEXTS[currentLanguage];
+            
+            appTitle.textContent = texts.appTitle;
+            appSubtitle.textContent = texts.appSubtitle;
+            streakText.textContent = texts.streakText;
+            daysText.textContent = texts.daysText;
+            overallTitle.textContent = texts.overallTitle;
+            monthlyTitle.textContent = texts.monthlyTitle;
+            weeklyTitle.textContent = texts.weeklyTitle;
+            todayTitle.textContent = texts.todayTitle;
+            weekTitle.textContent = texts.weekTitle;
+            resetBtn.textContent = texts.resetBtn;
+            
+            // Atualizar textos de porcentagem
+            updateProgressTexts();
+        }
+
+        // Atualizar textos de progresso
+        function updateProgressTexts() {
+            const percent = overallPercent.textContent.split('%')[0];
+            overallPercent.textContent = `${percent}% ${UI_TEXTS[currentLanguage].completed}`;
+            
+            const monthlyPercentValue = monthlyPercent.textContent.split('%')[0];
+            monthlyPercent.textContent = `${monthlyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
+            
+            const weeklyPercentValue = weeklyPercent.textContent.split('%')[0];
+            weeklyPercent.textContent = `${weeklyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
+        }
+
+        // Carregar dados do localStorage
+        function loadData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            
+            if (savedData) {
+                state = JSON.parse(savedData);
+                
+                if (state.startDate) {
+                    state.startDate = new Date(state.startDate);
+                    calculateCurrentMonth();
+                }
+                
+                if (state.lastCompletedDate) {
+                    state.lastCompletedDate = new Date(state.lastCompletedDate);
+                }
+            } else {
+                state.startDate = new Date();
+                state.startDate.setHours(0, 0, 0, 0);
+                calculateCurrentMonth();
+                saveData();
+            }
+        }
+
+        // Calcular mês atual (0-5)
+        function calculateCurrentMonth() {
+            const today = new Date();
+            const monthsDiff = (today.getFullYear() - state.startDate.getFullYear()) * 12 + 
+                             (today.getMonth() - state.startDate.getMonth());
+            
+            state.currentMonth = Math.min(Math.max(0, monthsDiff), 5);
+        }
+
+        // Atualizar meta mensal
+        function updateMonthGoal() {
+            const texts = UI_TEXTS[currentLanguage];
+            const monthName = texts.monthNames[state.currentMonth];
+            const title = texts.goalTitle.replace('{month}', monthName.replace('º', '').replace('st', '').replace('nd', '').replace('rd', ''));
+            
+            goalTitle.textContent = title;
+            goalDescription.textContent = MONTHLY_GOALS[currentLanguage][state.currentMonth];
+        }
+
+        // Salvar dados no localStorage
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // Configurar atividades para hoje (método natural)
+        function setupActivities() {
+            activitiesContainer.innerHTML = '';
+            
+            const today = getTodayKey();
+            const activities = NATURAL_ACTIVITIES[currentLanguage];
+            
+            activities.forEach(activity => {
+                const activityCard = document.createElement('div');
+                activityCard.className = 'activity-card';
+                activityCard.id = `activity-${activity.id}`;
+                
+                const isCompleted = state.dailyProgress[today]?.includes(activity.id);
+                if (isCompleted) {
+                    activityCard.classList.add('completed');
+                }
+                
+                activityCard.innerHTML = `
+                    <h3>${activity.name}</h3>
+                    <p>${UI_TEXTS[currentLanguage].points || 'Points'}: ${activity.points}</p>
+                    <div class="checkmark"></div>
+                `;
+                
+                activityCard.addEventListener('click', () => toggleActivity(activity.id));
+                activitiesContainer.appendChild(activityCard);
+            });
+        }
+
+        // Alternar atividade completada
+        function toggleActivity(activityId) {
+            const today = getTodayKey();
+            const activityCard = document.getElementById(`activity-${activityId}`);
+            
+            if (!state.dailyProgress[today]) {
+                state.dailyProgress[today] = [];
+            }
+            
+            const activityIndex = state.dailyProgress[today].indexOf(activityId);
+            
+            if (activityIndex === -1) {
+                state.dailyProgress[today].push(activityId);
+                activityCard.classList.add('completed');
+                
+                checkAllActivitiesCompleted();
+            } else {
+                state.dailyProgress[today].splice(activityIndex, 1);
+                activityCard.classList.remove('completed');
+            }
+            
+            saveData();
+            updateProgressBars();
+        }
+
+        // Verificar se todas atividades foram completadas
+        function checkAllActivitiesCompleted() {
+            const today = getTodayKey();
+            const completedCount = state.dailyProgress[today]?.length || 0;
+            
+            if (completedCount === NATURAL_ACTIVITIES.pt.length) {
+                markDayAsCompleted();
+            }
+        }
+
+        // Marcar dia como completado
+        function markDayAsCompleted() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const todayKey = getTodayKey();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayKey = getDateKey(yesterday);
+            
+            if (state.lastCompletedDate?.getTime() !== today.getTime()) {
+                state.completedDays++;
+                
+                if (state.dailyProgress[yesterdayKey]?.length === NATURAL_ACTIVITIES.pt.length) {
+                    state.streak++;
+                } else if (state.lastCompletedDate?.getTime() !== yesterday.getTime()) {
+                    state.streak = 1;
+                }
+                
+                state.lastCompletedDate = today;
+                saveData();
+                updateStreak();
+                setupCalendar();
+                calculateCurrentMonth();
+                updateMonthGoal();
+            }
+        }
+
+        // Verificar se atividades de hoje foram completadas
+        function checkTodaysCompletion() {
+            const today = getTodayKey();
+            const completedCount = state.dailyProgress[today]?.length || 0;
+            
+            if (completedCount === NATURAL_ACTIVITIES.pt.length) {
+                markDayAsCompleted();
+            }
+        }
+
+        // Configurar calendário
+        function setupCalendar() {
+            calendarContainer.innerHTML = '';
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const startOfWeek = new Date(today);
+            startOfWeek.setDate(today.getDate() - today.getDay());
+            
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(startOfWeek);
+                day.setDate(startOfWeek.getDate() + i);
+                
+                const dayKey = getDateKey(day);
+                const isCompleted = state.dailyProgress[dayKey]?.length === NATURAL_ACTIVITIES.pt.length;
+                const isToday = day.getTime() === today.getTime();
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = `day ${isCompleted ? 'completed' : ''}`;
+                
+                const dayName = day.toLocaleDateString(currentLanguage, { weekday: 'short' });
+                const dateNum = day.getDate();
+                
+                dayElement.innerHTML = `
+                    <div class="day-header">${dayName}</div>
+                    <div>${dateNum}</div>
+                    ${isToday ? `<div>${currentLanguage === 'pt' ? 'Hoje' : 'Today'}</div>` : ''}
+                `;
+                
+                calendarContainer.appendChild(dayElement);
+            }
+        }
+
+        // Atualizar barras de progresso
+        function updateProgressBars() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Progresso total
+            const overallPercentValue = Math.round((state.completedDays / TOTAL_DAYS) * 100);
+            overallProgress.style.width = `${overallPercentValue}%`;
+            overallPercent.textContent = `${overallPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
+            
+            // Progresso mensal
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            const monthDays = monthEnd.getDate();
+            
+            let monthCompleted = 0;
+            for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
+                const dayKey = getDateKey(d);
+                if (state.dailyProgress[dayKey]?.length === NATURAL_ACTIVITIES.pt.length) {
+                    monthCompleted++;
+                }
+            }
+            
+            const monthlyPercentValue = Math.round((monthCompleted / monthDays) * 100);
+            monthlyProgress.style.width = `${monthlyPercentValue}%`;
+            monthlyPercent.textContent = `${monthlyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
+            
+            // Progresso semanal
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            
+            let weekCompleted = 0;
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(weekStart);
+                day.setDate(weekStart.getDate() + i);
+                const dayKey = getDateKey(day);
+                if (state.dailyProgress[dayKey]?.length === NATURAL_ACTIVITIES.pt.length) {
+                    weekCompleted++;
+                }
+            }
+            
+            const weeklyPercentValue = Math.round((weekCompleted / 7) * 100);
+            weeklyProgress.style.width = `${weeklyPercentValue}%`;
+            weeklyPercent.textContent = `${weeklyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
+        }
+
+        // Atualizar contador de sequência
+        function updateStreak() {
+            streakCount.textContent = state.streak;
+        }
+
+        // Helper para obter chave do dia atual
+        function getTodayKey() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return getDateKey(today);
+        }
+
+        // Helper para formatar data como YYYY-MM-DD
+        function getDateKey(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        // Reiniciar progresso
+        resetBtn.addEventListener('click', () => {
+            const confirmText = currentLanguage === 'pt' ? 
+                'Tem certeza que deseja zerar todo seu progresso? Esta ação não pode ser desfeita.' : 
+                'Are you sure you want to reset all your progress? This cannot be undone.';
+            
+            if (confirm(confirmText)) {
+                localStorage.removeItem(STORAGE_KEY);
+                state = {
+                    startDate: new Date(),
+                    lastCompletedDate: null,
+                    streak: 0,
+                    completedDays: 0,
+                    dailyProgress: {},
+                    currentMonth: 0
+                };
+                state.startDate.setHours(0, 0, 0, 0);
+                saveData();
+                init();
+            }
+        });
+
+        // Configurar alternador de idioma
+        languageToggle.addEventListener('click', toggleLanguage);
+
+        // Inicializar o app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
