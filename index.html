@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -205,13 +206,14 @@
             .activities {
                 grid-template-columns: 1fr;
             }
-            
+
             .calendar {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -221,7 +223,8 @@
         </header>
 
         <div class="streak">
-            <span id="streak-text">Sequência atual:</span> <span class="streak-count" id="streak-count">0</span> <span id="days-text">dias</span>
+            <span id="streak-text">Sequência atual:</span> <span class="streak-count" id="streak-count">0</span> <span
+                id="days-text">dias</span>
         </div>
 
         <!-- Monthly Goal Display -->
@@ -275,7 +278,7 @@
         // Configuração do App
         const STORAGE_KEY = 'naturalEnglishProgress';
         const LANGUAGE_KEY = 'naturalEnglishLanguage';
-        
+
         // Metas mensais em ambos os idiomas
         const MONTHLY_GOALS = {
             pt: [
@@ -295,27 +298,28 @@
                 "Talk freely about various everyday topics."
             ]
         };
-        
+
         // Atividades do método natural em ambos os idiomas
         const NATURAL_ACTIVITIES = {
             pt: [
-                { id: 'comprehension', name: 'Compreensão auditiva (vídeos simples)', points: 20 },
-                { id: 'shadowing', name: 'Shadowing (repetição em voz alta)', points: 20 },
-                { id: 'immersion', name: 'Imersão passiva (ouvir conteúdo)', points: 15 },
-                { id: 'picture-description', name: 'Descrever imagens em voz alta', points: 15 },
-                { id: 'simple-dialogue', name: 'Praticar diálogos simples', points: 20 },
-                { id: 'intuitive-grammar', name: 'Estudo intuitivo de padrões', points: 10 }
+                { id: 'anki-review', name: 'Revisão no Anki (15-20 min)', points: 20 },
+                { id: 'role-play', name: 'Prática de Role-play (diálogos)', points: 20 },
+                { id: 'daily-questions', name: 'Perguntas Diárias em Inglês (5 perguntas)', points: 15 },
+                { id: 'english-lesson', name: 'Aula de Inglês (vídeo/online)', points: 15 },
+                { id: 'reading', name: 'Leitura (1 página do "The English Method")', points: 20 },
+                { id: 'immersion', name: 'Imersão em Inglês (músicas, filmes, podcasts)', points: 10 }
             ],
             en: [
-                { id: 'comprehension', name: 'Listening comprehension (simple videos)', points: 20 },
-                { id: 'shadowing', name: 'Shadowing (voice repetition)', points: 20 },
-                { id: 'immersion', name: 'Passive immersion (listen to content)', points: 15 },
-                { id: 'picture-description', name: 'Describe pictures out loud', points: 15 },
-                { id: 'simple-dialogue', name: 'Practice simple dialogues', points: 20 },
-                { id: 'intuitive-grammar', name: 'Intuitive pattern study', points: 10 }
+                { id: 'anki-review', name: 'Anki Review (15-20 min)', points: 20 },
+                { id: 'role-play', name: 'Role-play Practice (dialogues)', points: 20 },
+                { id: 'daily-questions', name: 'Daily English Questions (5 questions)', points: 15 },
+                { id: 'english-lesson', name: 'English Lesson (video/online)', points: 15 },
+                { id: 'reading', name: 'Reading (1 page of "The English Method")', points: 20 },
+                { id: 'immersion', name: 'English Immersion (music, movies, podcasts)', points: 10 }
             ]
         };
-        
+
+
         const TOTAL_DAYS = 180;
         const MONTH_DAYS = 30;
         const WEEK_DAYS = 7;
@@ -401,7 +405,7 @@
             updateProgressBars();
             updateStreak();
             updateUITexts();
-            
+
             checkTodaysCompletion();
         }
 
@@ -423,7 +427,7 @@
         // Atualizar todos os textos da UI
         function updateUITexts() {
             const texts = UI_TEXTS[currentLanguage];
-            
+
             appTitle.textContent = texts.appTitle;
             appSubtitle.textContent = texts.appSubtitle;
             streakText.textContent = texts.streakText;
@@ -434,7 +438,7 @@
             todayTitle.textContent = texts.todayTitle;
             weekTitle.textContent = texts.weekTitle;
             resetBtn.textContent = texts.resetBtn;
-            
+
             // Atualizar textos de porcentagem
             updateProgressTexts();
         }
@@ -443,10 +447,10 @@
         function updateProgressTexts() {
             const percent = overallPercent.textContent.split('%')[0];
             overallPercent.textContent = `${percent}% ${UI_TEXTS[currentLanguage].completed}`;
-            
+
             const monthlyPercentValue = monthlyPercent.textContent.split('%')[0];
             monthlyPercent.textContent = `${monthlyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
-            
+
             const weeklyPercentValue = weeklyPercent.textContent.split('%')[0];
             weeklyPercent.textContent = `${weeklyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
         }
@@ -454,15 +458,15 @@
         // Carregar dados do localStorage
         function loadData() {
             const savedData = localStorage.getItem(STORAGE_KEY);
-            
+
             if (savedData) {
                 state = JSON.parse(savedData);
-                
+
                 if (state.startDate) {
                     state.startDate = new Date(state.startDate);
                     calculateCurrentMonth();
                 }
-                
+
                 if (state.lastCompletedDate) {
                     state.lastCompletedDate = new Date(state.lastCompletedDate);
                 }
@@ -477,9 +481,9 @@
         // Calcular mês atual (0-5)
         function calculateCurrentMonth() {
             const today = new Date();
-            const monthsDiff = (today.getFullYear() - state.startDate.getFullYear()) * 12 + 
-                             (today.getMonth() - state.startDate.getMonth());
-            
+            const monthsDiff = (today.getFullYear() - state.startDate.getFullYear()) * 12 +
+                (today.getMonth() - state.startDate.getMonth());
+
             state.currentMonth = Math.min(Math.max(0, monthsDiff), 5);
         }
 
@@ -488,7 +492,7 @@
             const texts = UI_TEXTS[currentLanguage];
             const monthName = texts.monthNames[state.currentMonth];
             const title = texts.goalTitle.replace('{month}', monthName.replace('º', '').replace('st', '').replace('nd', '').replace('rd', ''));
-            
+
             goalTitle.textContent = title;
             goalDescription.textContent = MONTHLY_GOALS[currentLanguage][state.currentMonth];
         }
@@ -501,26 +505,26 @@
         // Configurar atividades para hoje (método natural)
         function setupActivities() {
             activitiesContainer.innerHTML = '';
-            
+
             const today = getTodayKey();
             const activities = NATURAL_ACTIVITIES[currentLanguage];
-            
+
             activities.forEach(activity => {
                 const activityCard = document.createElement('div');
                 activityCard.className = 'activity-card';
                 activityCard.id = `activity-${activity.id}`;
-                
+
                 const isCompleted = state.dailyProgress[today]?.includes(activity.id);
                 if (isCompleted) {
                     activityCard.classList.add('completed');
                 }
-                
+
                 activityCard.innerHTML = `
                     <h3>${activity.name}</h3>
                     <p>${UI_TEXTS[currentLanguage].points || 'Points'}: ${activity.points}</p>
                     <div class="checkmark"></div>
                 `;
-                
+
                 activityCard.addEventListener('click', () => toggleActivity(activity.id));
                 activitiesContainer.appendChild(activityCard);
             });
@@ -530,23 +534,23 @@
         function toggleActivity(activityId) {
             const today = getTodayKey();
             const activityCard = document.getElementById(`activity-${activityId}`);
-            
+
             if (!state.dailyProgress[today]) {
                 state.dailyProgress[today] = [];
             }
-            
+
             const activityIndex = state.dailyProgress[today].indexOf(activityId);
-            
+
             if (activityIndex === -1) {
                 state.dailyProgress[today].push(activityId);
                 activityCard.classList.add('completed');
-                
+
                 checkAllActivitiesCompleted();
             } else {
                 state.dailyProgress[today].splice(activityIndex, 1);
                 activityCard.classList.remove('completed');
             }
-            
+
             saveData();
             updateProgressBars();
         }
@@ -555,7 +559,7 @@
         function checkAllActivitiesCompleted() {
             const today = getTodayKey();
             const completedCount = state.dailyProgress[today]?.length || 0;
-            
+
             if (completedCount === NATURAL_ACTIVITIES.pt.length) {
                 markDayAsCompleted();
             }
@@ -565,21 +569,21 @@
         function markDayAsCompleted() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             const todayKey = getTodayKey();
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
             const yesterdayKey = getDateKey(yesterday);
-            
+
             if (state.lastCompletedDate?.getTime() !== today.getTime()) {
                 state.completedDays++;
-                
+
                 if (state.dailyProgress[yesterdayKey]?.length === NATURAL_ACTIVITIES.pt.length) {
                     state.streak++;
                 } else if (state.lastCompletedDate?.getTime() !== yesterday.getTime()) {
                     state.streak = 1;
                 }
-                
+
                 state.lastCompletedDate = today;
                 saveData();
                 updateStreak();
@@ -593,7 +597,7 @@
         function checkTodaysCompletion() {
             const today = getTodayKey();
             const completedCount = state.dailyProgress[today]?.length || 0;
-            
+
             if (completedCount === NATURAL_ACTIVITIES.pt.length) {
                 markDayAsCompleted();
             }
@@ -602,33 +606,33 @@
         // Configurar calendário
         function setupCalendar() {
             calendarContainer.innerHTML = '';
-            
+
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             const startOfWeek = new Date(today);
             startOfWeek.setDate(today.getDate() - today.getDay());
-            
+
             for (let i = 0; i < 7; i++) {
                 const day = new Date(startOfWeek);
                 day.setDate(startOfWeek.getDate() + i);
-                
+
                 const dayKey = getDateKey(day);
                 const isCompleted = state.dailyProgress[dayKey]?.length === NATURAL_ACTIVITIES.pt.length;
                 const isToday = day.getTime() === today.getTime();
-                
+
                 const dayElement = document.createElement('div');
                 dayElement.className = `day ${isCompleted ? 'completed' : ''}`;
-                
+
                 const dayName = day.toLocaleDateString(currentLanguage, { weekday: 'short' });
                 const dateNum = day.getDate();
-                
+
                 dayElement.innerHTML = `
                     <div class="day-header">${dayName}</div>
                     <div>${dateNum}</div>
                     ${isToday ? `<div>${currentLanguage === 'pt' ? 'Hoje' : 'Today'}</div>` : ''}
                 `;
-                
+
                 calendarContainer.appendChild(dayElement);
             }
         }
@@ -637,17 +641,17 @@
         function updateProgressBars() {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             // Progresso total
             const overallPercentValue = Math.round((state.completedDays / TOTAL_DAYS) * 100);
             overallProgress.style.width = `${overallPercentValue}%`;
             overallPercent.textContent = `${overallPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
-            
+
             // Progresso mensal
             const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
             const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
             const monthDays = monthEnd.getDate();
-            
+
             let monthCompleted = 0;
             for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 1)) {
                 const dayKey = getDateKey(d);
@@ -655,15 +659,15 @@
                     monthCompleted++;
                 }
             }
-            
+
             const monthlyPercentValue = Math.round((monthCompleted / monthDays) * 100);
             monthlyProgress.style.width = `${monthlyPercentValue}%`;
             monthlyPercent.textContent = `${monthlyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
-            
+
             // Progresso semanal
             const weekStart = new Date(today);
             weekStart.setDate(today.getDate() - today.getDay());
-            
+
             let weekCompleted = 0;
             for (let i = 0; i < 7; i++) {
                 const day = new Date(weekStart);
@@ -673,7 +677,7 @@
                     weekCompleted++;
                 }
             }
-            
+
             const weeklyPercentValue = Math.round((weekCompleted / 7) * 100);
             weeklyProgress.style.width = `${weeklyPercentValue}%`;
             weeklyPercent.textContent = `${weeklyPercentValue}% ${UI_TEXTS[currentLanguage].completed}`;
@@ -698,10 +702,10 @@
 
         // Reiniciar progresso
         resetBtn.addEventListener('click', () => {
-            const confirmText = currentLanguage === 'pt' ? 
-                'Tem certeza que deseja zerar todo seu progresso? Esta ação não pode ser desfeita.' : 
+            const confirmText = currentLanguage === 'pt' ?
+                'Tem certeza que deseja zerar todo seu progresso? Esta ação não pode ser desfeita.' :
                 'Are you sure you want to reset all your progress? This cannot be undone.';
-            
+
             if (confirm(confirmText)) {
                 localStorage.removeItem(STORAGE_KEY);
                 state = {
@@ -725,4 +729,5 @@
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
+
 </html>
